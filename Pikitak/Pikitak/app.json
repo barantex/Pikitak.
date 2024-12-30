@@ -1,0 +1,38 @@
+import React, { useState } from 'react';
+import { View, Text, Button, Platform } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
+
+const VideoUpload = () => {
+  const [videoUri, setVideoUri] = useState(null);
+
+  const pickVideo = () => {
+    launchImageLibrary(
+      { mediaType: 'video' },
+      response => {
+        if (response.assets) {
+          setVideoUri(response.assets[0].uri);
+        }
+      }
+    );
+  };
+
+  const uploadVideo = async () => {
+    if (videoUri) {
+      const fileName = videoUri.split('/').pop();
+      const reference = storage().ref(fileName);
+      await reference.putFile(videoUri);
+      alert('Video Yüklendi!');
+    }
+  };
+
+  return (
+    <View>
+      <Button title="Video Seç" onPress={pickVideo} />
+      <Button title="Video Yükle" onPress={uploadVideo} />
+    </View>
+  );
+};
+
+export default VideoUpload;
+
